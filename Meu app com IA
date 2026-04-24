@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciador de Metas — Poupe com propósito</title>
+    <meta name="description" content="Defina sua meta financeira e descubra exatamente quanto poupar por dia para conquistá-la no prazo." />
+
+    <meta property="og:title" content="Gerenciador de Metas" />
+    <meta property="og:description" content="Defina sua meta financeira e descubra exatamente quanto poupar por dia para conquistá-la." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+import { useEffect, useState } from "react";
+
+interface CircularProgressProps {
+  value: number; // 0-100
+  size?: number;
+  strokeWidth?: number;
+  label?: string;
+  sublabel?: string;
+}
+
+export const CircularProgress = ({
+  value,
+  size = 200,
+  strokeWidth = 14,
+  label,
+  sublabel,
+}: CircularProgressProps) => {
+  const [animatedValue, setAnimatedValue] = useState(0);
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (animatedValue / 100) * circumference;
+
+  useEffect(() => {
+    const t = setTimeout(() => setAnimatedValue(value), 100);
+    return () => clearTimeout(t);
+  }, [value]);
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          <linearGradient id="emeraldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" />
+            <stop offset="100%" stopColor="hsl(var(--primary-glow))" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="hsl(var(--secondary))"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="url(#emeraldGradient)"
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-4xl font-bold text-gradient-emerald">
+          {Math.round(animatedValue)}%
+        </span>
+        {label && <span className="text-sm text-muted-foreground mt-1">{label}</span>}
+        {sublabel && <span className="text-xs text-muted-foreground/70">{sublabel}</span>}
+      </div>
+    </div>
+  );
+};
+https://lovable.dev/opengraph-image-p98pqg.png
